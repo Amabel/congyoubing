@@ -1,0 +1,42 @@
+service: congyoubing
+
+frameworkVersion: "2"
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-layers
+  - serverless-plugin-warmup
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${env:REGION}
+  profile: ${env:PROFILE_NAME}
+  deploymentBucket:
+    name: ${env:BUCKET_NAME}
+  lambdaHashingVersion: 20201221
+  apiGateway:
+    shouldStartNameWithService: true
+
+custom:
+  warmup:
+    default:
+      enabled: true
+      prewarm: true
+      payload:
+        source: serverless-plugin-warmup
+  serverless-layers:
+    functions: # optional
+      - congyoubing
+    dependenciesPath: ./package.json
+    packageManager: yarn
+    layersDeploymentBucket: ${env:LAYERS_BUCKET_NAME}
+
+functions:
+  congyoubing:
+    handler: src/index.get
+    events:
+      - http:
+          path: /api
+          method: get
+          cors: true

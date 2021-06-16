@@ -1,0 +1,5 @@
+node_modules
+.serverless
+
+# Local env files
+.env.prod.local
